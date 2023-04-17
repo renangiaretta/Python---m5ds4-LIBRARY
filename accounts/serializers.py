@@ -15,3 +15,8 @@ class AccountSerializer(serializers.Serializer):
 
     def create(self, validated_data: dict) -> Account:
         return Account.objects.create_user(**validated_data)
+
+
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField(max_length=150, write_only=True)
+    password = serializers.CharField(max_length=127, write_only=True)
