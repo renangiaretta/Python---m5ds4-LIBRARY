@@ -13,6 +13,8 @@ class AccountSerializer(serializers.Serializer):
 
     is_superuser = serializers.BooleanField(read_only=True)
 
+    books_count = serializers.IntegerField(source='books.count', read_only=True)
+
     def create(self, validated_data: dict) -> Account:
         return Account.objects.create_user(**validated_data)
 

@@ -8,11 +8,12 @@ from rest_framework.permissions import (
     IsAuthenticated,
     IsAuthenticatedOrReadOnly,
 )
+from accounts.permissions import IsAdminOrReadOnly
 
 
 class BookView(APIView):
     authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminOrReadOnly]
 
     def get(self, request: Request) -> Response:
         books = Book.objects.all()
@@ -22,6 +23,6 @@ class BookView(APIView):
     def post(self, request: Request) -> Response:
         serializer = BookSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        serializer.save(owner=request.user)
 
         return Response(serializer.data, status.HTTP_201_CREATED)

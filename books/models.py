@@ -11,8 +11,8 @@ class Book(models.Model):
         'accounts.Account',
         on_delete=models.CASCADE,
         related_name='books',
-        null=True
+        # null=True
     )
 
-    def __str__(self) -> str:
+    def __repr__(self) -> str:
         return f'<Book [{self.id}] - {self.title}>'
