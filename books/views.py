@@ -9,6 +9,8 @@ from rest_framework.permissions import (
     IsAuthenticatedOrReadOnly,
 )
 from accounts.permissions import IsAdminOrReadOnly
+from .permissions import IsBookOwner
+from django.shortcuts import get_object_or_404
 
 
 class BookView(APIView):
@@ -26,3 +28,31 @@ class BookView(APIView):
         serializer.save(owner=request.user)
 
         return Response(serializer.data, status.HTTP_201_CREATED)
+
+
+class BookDetailView(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAdminOrReadOnly, IsBookOwner]
+
+    def get(self, request: Request, book_id: int) -> Response:
+        book = get_object_or_404(Book, pk=book_id)
+        serializer = BookSerializer(book)
+        return Response(serializer.data, status.HTTP_200_OK)
+
+    def delete(self, request: Request, book_id: int) -> Response:
+        book = get_object_or_404(Book, pk=book_id)
+        self.check_object_permissions(request, obj)
+        book.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def patch(self, request: Request, book_id: int) -> Response:
+        book = get_object_or_404(Book, pk=book_id)
+        self.check_object_permissions(request, book)
+        serializer = BookSerializer(
+            instance=book,
+            data=request.data,
+            partial=True,
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status.HTTP_200_OK)

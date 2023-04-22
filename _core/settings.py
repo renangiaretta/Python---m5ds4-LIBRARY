@@ -37,6 +37,7 @@ THIRD_PARTY_APPS = [
 MY_APPS = [
     "accounts",
     "books",
+    "books_marks"
 ]
 
 DJANGO_APPS = [
